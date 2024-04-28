@@ -3,7 +3,8 @@
 	This problem requires you to implement a basic interface for a binary tree
 */
 
-//I AM NOT DONE
+// //I AM NOT DONE
+
 use std::cmp::Ordering;
 use std::fmt::Debug;
 
@@ -38,35 +39,32 @@ where
         }
     }
 }
-
 impl<T> BinarySearchTree<T>
 where
     T: Ord,
 {
-
     fn new() -> Self {
         BinarySearchTree { root: None }
     }
-
     // Insert a value into the BST
     fn insert(&mut self, value: T) {
         //TODO
-        if let Some(ref mut i) = self.root {
-            i.insert(value);
+        if let Some(ref mut root) = self.root {
+            // 2.1 直接插入新的节点
+            root.insert(value);
         } else {
+            // 2.2 插入节点类，实现根节点非空时的插入
             self.root = Some(Box::new(TreeNode::new(value)));
-            println!("{:?}", self.root);
         }
         
     }
-
     // Search for a value in the BST
     fn search(&self, value: T) -> bool {
         //TODO
-        true
+        self.root.as_ref()
+            .map_or(false, |root| root.search(&value))
     }
 }
-
 impl<T> TreeNode<T>
 where
     T: Ord,
@@ -74,7 +72,29 @@ where
     // Insert a node into the tree
     fn insert(&mut self, value: T) {
         //TODO
+        if value < self.value {
+            if let Some(ref mut left) = self.left {
+                left.insert(value);
+            } else {
+                self.left = Some(Box::new(TreeNode::new(value)));
+            }
+        } else if value > self.value {
+            if let Some(ref mut right) = self.right {
+                right.insert(value);
+            } else {
+                self.right = Some(Box::new(TreeNode::new(value)));
+            }
+        }
+
     }
+    fn search(&self, value: &T) -> bool {
+        match value.cmp(&self.value) {
+            Ordering::Less => self.left.as_ref().map_or(false, |node| node.search(value)),
+            Ordering::Greater => self.right.as_ref().map_or(false, |node| node.search(value)),
+            Ordering::Equal => true,
+        }
+    }
+
 }
 
 
